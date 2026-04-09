@@ -1,0 +1,12 @@
+{
+  "name": "NEXUS GROUP | Attendance Calculation System",
+  "short_name": "Nexus",
+  "description": "Attendance Calculation System — מערכת ניהול נוכחות וחישוב שכר",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f0f7fa",
+  "theme_color": "#0891b2",
+  "orientation": "any",
+  "dir": "rtl",
+  "lang": "he"
+}
