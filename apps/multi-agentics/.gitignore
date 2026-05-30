@@ -1,0 +1,9 @@
+node_modules
+dist
+*.local
+.env
+.env.*
+data/*.db
+data/*.db-*
+new-level-multi-agentics.zip
+.DS_Store
