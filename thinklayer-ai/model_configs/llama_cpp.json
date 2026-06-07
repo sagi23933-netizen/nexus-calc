@@ -1,0 +1,11 @@
+{
+  "provider": "llamacpp",
+  "base_url": "http://localhost:8080",
+  "prefix": "llamacpp:",
+  "api_style": "openai-compatible",
+  "endpoints": {
+    "chat": "/v1/chat/completions",
+    "models": "/v1/models"
+  },
+  "notes": "Run the llama.cpp server: ./llama-server -m model.gguf --port 8080. The single loaded model is addressed by any name after the prefix."
+}

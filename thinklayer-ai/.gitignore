@@ -1,0 +1,18 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Node / Vite
+node_modules/
+dist/
+
+# Tauri / Rust
+target/
+apps/desktop/src-tauri/gen/
+
+# Local data (created at runtime)
+data/sqlite/*.db
+data/vector/*.jsonl
+data/uploads/*
+!data/**/.gitkeep

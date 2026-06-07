@@ -1,0 +1,14 @@
+[
+  {
+    "prompt": "A train leaves city A at 60 km/h and another leaves city B at 90 km/h toward each other. The cities are 300 km apart. After how many hours do they meet?",
+    "keywords": ["2", "hours", "150"]
+  },
+  {
+    "prompt": "Write a Python function that returns the nth Fibonacci number iteratively, and explain its time complexity.",
+    "keywords": ["def", "for", "O(n)", "return"]
+  },
+  {
+    "prompt": "Outline a 5-step go-to-market plan for a local desktop AI tool aimed at developers.",
+    "keywords": ["audience", "pricing", "launch", "feedback", "channel"]
+  }
+]

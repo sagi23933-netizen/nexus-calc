@@ -1,0 +1,11 @@
+{
+  "provider": "lmstudio",
+  "base_url": "http://localhost:1234",
+  "prefix": "lmstudio:",
+  "api_style": "openai-compatible",
+  "endpoints": {
+    "chat": "/v1/chat/completions",
+    "models": "/v1/models"
+  },
+  "notes": "Enable the local server in LM Studio (Developer tab). Model ids match what LM Studio reports under /v1/models."
+}

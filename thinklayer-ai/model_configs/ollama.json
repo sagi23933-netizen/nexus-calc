@@ -1,0 +1,13 @@
+{
+  "provider": "ollama",
+  "base_url": "http://localhost:11434",
+  "prefix": "ollama:",
+  "recommended_models": {
+    "classifier": "llama3.2:1b",
+    "planner": "llama3.2",
+    "solver": "qwen2.5:7b",
+    "coder": "qwen2.5-coder:7b",
+    "embeddings": "nomic-embed-text"
+  },
+  "notes": "Native /api/generate and /api/embeddings endpoints. Start with: ollama serve"
+}
