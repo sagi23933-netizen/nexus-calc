@@ -12,6 +12,7 @@ const CalculationPage = lazy(() => import('./pages/CalculationPage'));
 const ExportPage = lazy(() => import('./pages/ExportPage'));
 const ReportsPage = lazy(() => import('./pages/ReportsPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const AIAgentsPage = lazy(() => import('./pages/AIAgentsPage'));
 
 class ErrorBoundary extends React.Component<{children: React.ReactNode}, {hasError: boolean, error: Error | null}> {
   constructor(props: {children: React.ReactNode}) {
@@ -47,6 +48,7 @@ const pageTitles: Record<string, string> = {
   '/calculation': 'חישוב שעות',
   '/export': 'יצוא שיקלולית',
   '/reports': 'דוחות בקרה',
+  '/ai': 'סוכני AI',
   '/settings': 'הגדרות',
 };
 
@@ -118,6 +120,7 @@ export default function App() {
             <Route path="/calculation" element={<CalculationPage />} />
             <Route path="/export" element={<ExportPage />} />
             <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/ai" element={<AIAgentsPage />} />
             <Route path="/settings" element={<SettingsPage />} />
             <Route path="*" element={
               <div className="flex-1 flex items-center justify-center" dir="rtl">

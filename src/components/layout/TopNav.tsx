@@ -1,7 +1,7 @@
 import { NavLink } from 'react-router-dom';
 import {
   Users, Calculator, Download,
-  Settings, Calendar, ClipboardList, Home, Menu, X, BarChart3
+  Settings, Calendar, ClipboardList, Home, Menu, X, BarChart3, Bot
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -13,6 +13,7 @@ const preloadMap: Record<string, () => void> = {
   '/export': () => import('../../pages/ExportPage'),
   '/reports': () => import('../../pages/ReportsPage'),
   '/settings': () => import('../../pages/SettingsPage'),
+  '/ai': () => import('../../pages/AIAgentsPage'),
 };
 
 const navItems = [
@@ -23,6 +24,7 @@ const navItems = [
   { to: '/calculation', icon: Calculator, label: 'חישוב' },
   { to: '/export', icon: Download, label: 'יצוא' },
   { to: '/reports', icon: BarChart3, label: 'דוחות' },
+  { to: '/ai', icon: Bot, label: 'סוכני AI' },
   { to: '/settings', icon: Settings, label: 'הגדרות' },
 ];
 
