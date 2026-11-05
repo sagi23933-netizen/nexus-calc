@@ -154,7 +154,7 @@ export default function SettingsPage() {
   const [drafts, setDrafts] = useState<AllSettings>({});
   const [saving, setSaving] = useState(false);
 
-  const current = data?.settings ?? {};
+  const current = useMemo<AllSettings>(() => data?.settings ?? {}, [data]);
   const section = SECTIONS.find((s) => s.id === active);
   const values: Values = { ...(current[active] || {}), ...(drafts[active] || {}) };
   const dirtyIds = useMemo(
@@ -360,7 +360,7 @@ function SystemPanel() {
   const RES_LABEL: Record<string, string> = { activated: 'דילים מתוזמנים שעלו', expired: 'דילים שפגו ונמחקו', trialWarnings: 'התראות סיום ניסיון', trialBlocked: 'חשבונות שנחסמו בסיום ניסיון' };
   return (
     <div className="space-y-5">
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatTile label="גרסת Node" value={<span className="font-mono text-xl" dir="ltr">{d?.node ?? '—'}</span>} icon={<Server size={20} />} tone="sky" />
         <StatTile label="זמן פעילות" value={<span className="text-xl">{up}</span>} icon={<Timer size={20} />} tone="lime" />
         <StatTile label="זיכרון" value={d ? `${d.memory}MB` : '—'} icon={<Database size={20} />} tone="violet" />

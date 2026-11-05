@@ -100,7 +100,7 @@ export function SupportWidget() {
         whileHover={{ scale: 1.06, rotate: -4 }}
         whileTap={{ scale: 0.95 }}
         aria-label="צור קשר"
-        className="fixed bottom-24 left-4 z-[70] flex h-14 w-14 items-center justify-center rounded-2xl text-leaf-950 lg:bottom-6 lg:left-6 lg:h-16 lg:w-16"
+        className="fixed bottom-[92px] left-3 z-[70] flex h-12 w-12 items-center justify-center rounded-2xl text-leaf-950 lg:bottom-6 lg:left-6 lg:h-16 lg:w-16"
         style={{
           background: 'linear-gradient(160deg,#c6f16b,#8cc10a 55%,#6f9e0b)',
           boxShadow: 'inset 0 1px 0 rgba(255,255,255,.6), inset 0 -4px 0 rgba(40,70,0,.35), 0 18px 36px -12px rgba(60,110,0,.75)',
@@ -130,7 +130,7 @@ export function SupportWidget() {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: 'spring', damping: 24, stiffness: 300 }}
             style={{ transformPerspective: 1200, transformOrigin: 'bottom left' }}
-            className="fixed bottom-40 left-4 right-4 z-[70] flex h-[min(560px,calc(100vh-200px))] flex-col overflow-hidden rounded-[28px] bg-white shadow-deep ring-1 ring-ink-100 sm:right-auto sm:w-[380px] lg:bottom-[104px] lg:left-6"
+            className="fixed bottom-[150px] left-3 right-3 z-[70] flex h-[min(560px,calc(100vh-200px))] flex-col overflow-hidden rounded-[28px] bg-white shadow-deep ring-1 ring-ink-100 sm:right-auto sm:w-[380px] lg:bottom-[104px] lg:left-6"
           >
             <div className="relative overflow-hidden px-5 pb-5 pt-4 text-white" style={{ background: 'linear-gradient(135deg,#123a1f,#1e5c2e 50%,#3f8f2a)' }}>
               <div className="pointer-events-none absolute -left-8 -top-12 h-36 w-36 rounded-full bg-lime-400/20 blur-2xl" />

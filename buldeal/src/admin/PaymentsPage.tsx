@@ -10,7 +10,7 @@ import { CHART_DARK, SERIES_DARK } from '../shared/charts';
 import { Button, Confirm, Empty, Input, Pagination, Skeleton, StatusBadge, Tabs, cx } from '../shared/ui';
 import { useToast } from '../shared/Toast';
 import { ChartTooltip, PageHeader, Panel, StatTile } from './kit';
-import { DarkSelect } from './parts';
+import { DarkSelect, dayIL } from './parts';
 
 interface PaymentsRes {
   items: Payment[];
@@ -56,10 +56,19 @@ function PaymentsTab() {
   const [refund, setRefund] = useState<Payment | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const monthly = useMemo(() => (data?.monthly ?? []).map((m) => ({ ...m, label: monthLabel(m.month) })), [data]);
+  // last 12 calendar months (Israel time), zero-filled
+  const monthly = useMemo(() => {
+    const byMonth = new Map((data?.monthly ?? []).map((m) => [m.month, m]));
+    const [y, m] = dayIL().split('-').map(Number);
+    return Array.from({ length: 12 }, (_, i) => {
+      const d = new Date(Date.UTC(y, m - 1 - (11 - i), 1));
+      const key = d.toISOString().slice(0, 7);
+      return { month: key, amount: byMonth.get(key)?.amount ?? 0, count: byMonth.get(key)?.count ?? 0, label: monthLabel(key) };
+    });
+  }, [data]);
   const s = data?.summary;
-  const thisMonth = data?.monthly[data.monthly.length - 1];
-  const lastMonth = data?.monthly[data.monthly.length - 2];
+  const thisMonth = monthly[11];
+  const lastMonth = monthly[10];
 
   const doRefund = async () => {
     if (!refund) return;
@@ -78,12 +87,12 @@ function PaymentsTab() {
 
   return (
     <>
-      <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {!s ? (
           Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[112px] !rounded-3xl" />)
         ) : (
           <>
-            <StatTile label="הכנסות (כולל מע״מ)" value={money(s.paid)} icon={<TrendingUp size={20} />} tone="lime" hint={thisMonth ? `החודש: ${money(thisMonth.amount)}` : undefined} delta={thisMonth && lastMonth && lastMonth.amount ? ((thisMonth.amount - lastMonth.amount) / lastMonth.amount) * 100 : null} />
+            <StatTile label="הכנסות (כולל מע״מ)" value={money(s.paid)} icon={<TrendingUp size={20} />} tone="lime" hint={`החודש: ${money(thisMonth.amount)}`} delta={lastMonth.amount ? ((thisMonth.amount - lastMonth.amount) / lastMonth.amount) * 100 : null} />
             <StatTile label="מתוכן מע״מ" value={money(s.vat)} icon={<Receipt size={20} />} tone="sky" hint="לדיווח" />
             <StatTile label="זיכויים" value={money(s.refunded)} icon={<Undo2 size={20} />} tone="amber" />
             <StatTile label="חיובים שנכשלו" value={(s.failed ?? 0).toLocaleString('he-IL')} icon={<CircleX size={20} />} tone="red" hint="כולל ניסיונות חידוש" />
@@ -95,7 +104,7 @@ function PaymentsTab() {
         <div className="h-[240px]" dir="ltr">
           {loading && !data ? (
             <Skeleton className="h-full" />
-          ) : monthly.length === 0 ? (
+          ) : !monthly.some((m) => m.amount > 0) ? (
             <Empty dark title="אין עדיין תשלומים" />
           ) : (
             <ResponsiveContainer width="100%" height="100%">
@@ -104,7 +113,7 @@ function PaymentsTab() {
                 <XAxis dataKey="label" tick={{ fill: CHART_DARK.axis, fontSize: 11 }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fill: CHART_DARK.axis, fontSize: 11 }} axisLine={false} tickLine={false} tickFormatter={(v: number) => `₪${compact(v)}`} />
                 <Tooltip content={<ChartTooltip valueFormatter={(v) => money(v)} />} cursor={{ fill: 'rgba(255,255,255,.04)' }} />
-                <Bar dataKey="amount" name="הכנסות" fill={SERIES_DARK[0]} radius={[4, 4, 0, 0]} maxBarSize={44} label={{ position: 'top', fill: CHART_DARK.muted, fontSize: 11, formatter: (v: unknown) => `₪${compact(Number(v))}` }} />
+                <Bar dataKey="amount" name="הכנסות" fill={SERIES_DARK[0]} radius={[4, 4, 0, 0]} maxBarSize={44} label={{ position: 'top', fill: CHART_DARK.muted, fontSize: 11, formatter: (v: unknown) => (Number(v) ? `₪${compact(Number(v))}` : '') }} />
               </BarChart>
             </ResponsiveContainer>
           )}
@@ -184,8 +193,8 @@ function PaymentsTab() {
                       <td>
                         <StatusBadge dark status={p.status} />
                       </td>
-                      <td className="whitespace-nowrap font-mono text-xs text-ink-400" dir="ltr">
-                        {p.card_last4 ? `•••• ${p.card_last4}` : '—'}
+                      <td className="whitespace-nowrap font-mono text-xs text-ink-400">
+                        <span dir="ltr">{p.card_last4 ? `•••• ${p.card_last4}` : '—'}</span>
                         <div className="text-[10px] text-ink-500">{p.provider}</div>
                       </td>
                       <td>

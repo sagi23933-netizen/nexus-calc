@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Area, AreaChart, CartesianGrid, Line, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { ArrowLeft, Bell, Coins, Eye, LayoutGrid, MessageSquareHeart, MousePointerClick, Plus, Rocket, Sparkles, Users } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useApi } from '../lib/hooks';
 import { useAuth } from '../lib/auth';
 import type { BusinessInfo, Deal, Notification } from '../lib/types';
@@ -33,15 +33,26 @@ function greeting() {
 
 export default function OverviewPage() {
   const { me, setBusiness } = useAuth();
-  const { data, loading } = useApi<Overview>('/business/overview');
+  const { data, loading, reload } = useApi<Overview>('/business/overview');
+  const pending = me.business?.counts.pending_feedback;
+  const firstPending = useRef(true);
 
   useEffect(() => {
     if (data?.business) setBusiness(data.business);
   }, [data, setBusiness]);
 
+  // feedback answered elsewhere (modal in the layout) → refresh the pending list
+  useEffect(() => {
+    if (firstPending.current) {
+      firstPending.current = false;
+      return;
+    }
+    reload();
+  }, [pending, reload]);
+
   const b = data?.business ?? me.business!;
   const series = fillDays(data?.series ?? [], 14, { views: 0, phone: 0, waze: 0 }).map((r) => ({ ...r, clicks: (r.phone || 0) + (r.waze || 0) }));
-  const helpRate = data?.totals.answered ? Math.round(((data.totals.helped || 0) / data.totals.answered) * 100) : null;
+  const helpRate = data?.totals?.answered ? Math.round(((data.totals.helped || 0) / data.totals.answered) * 100) : null;
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">

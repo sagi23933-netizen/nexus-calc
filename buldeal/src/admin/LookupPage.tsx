@@ -192,7 +192,7 @@ export default function LookupPage({ kind }: { kind: Kind }) {
                     className={cx(drag === it.id && 'opacity-40', over === it.id && drag !== it.id && 'outline outline-2 -outline-offset-2 outline-sky-400', !it.is_active && 'opacity-60')}
                   >
                     <td className="text-ink-500">{canDrag && <GripVertical size={16} className="cursor-grab" />}</td>
-                    <td>
+                    <td className="min-w-[170px]">
                       <div className="flex items-center gap-3">
                         {kind === 'categories' && (
                           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl shadow-3d" style={{ background: it.color, color: '#fff' }}>
@@ -201,7 +201,7 @@ export default function LookupPage({ kind }: { kind: Kind }) {
                         )}
                         <div className="min-w-0">
                           <div className="font-semibold text-white">{it.name}</div>
-                          <div className="font-mono text-[11px] text-ink-500" dir="ltr">
+                          <div className="truncate whitespace-nowrap font-mono text-[11px] text-ink-500" dir="ltr">
                             /{it.slug}
                           </div>
                         </div>

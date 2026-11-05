@@ -2,6 +2,7 @@ import { Component, lazy, Suspense, type ReactNode } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './lib/auth';
 import { PageLoader } from './shared/ui';
+import { PwaLayer } from './shared/InstallPrompt';
 
 // ---- public site ----
 import SiteLayout from './site/SiteLayout';
@@ -136,8 +137,8 @@ export default function App() {
             <Route path="businesses/:id" element={<ABusinessDetail />} />
             <Route path="deals" element={<ADeals />} />
             <Route path="packages" element={<APackages />} />
-            <Route path="categories" element={<ALookup kind="categories" />} />
-            <Route path="cities" element={<ALookup kind="cities" />} />
+            <Route path="categories" element={<ALookup key="categories" kind="categories" />} />
+            <Route path="cities" element={<ALookup key="cities" kind="cities" />} />
             <Route path="analytics" element={<AAnalytics />} />
             <Route path="ai" element={<AAI />} />
             <Route path="payments" element={<APayments />} />
@@ -149,6 +150,7 @@ export default function App() {
           </Route>
         </Routes>
       </Suspense>
+      <PwaLayer />
     </ErrorBoundary>
   );
 }

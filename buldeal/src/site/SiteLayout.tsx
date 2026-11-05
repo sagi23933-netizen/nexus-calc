@@ -11,6 +11,7 @@ import { BrandLogo } from '../shared/Brand';
 import { Button, Field, Input, Modal, Textarea, cx } from '../shared/ui';
 import { useToast } from '../shared/Toast';
 import { CityPicker } from './CityPicker';
+import { InstallButton } from '../shared/InstallPrompt';
 import { SiteContext, type SiteCtx } from './siteContext';
 
 const CITY_KEY = 'bd_city';
@@ -201,6 +202,22 @@ export default function SiteLayout() {
   }, [qDraft]);
 
   const site = boot?.settings.site;
+
+  if (site?.maintenanceMode && me.user?.role !== 'admin') {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 px-6 text-center" style={{ background: 'radial-gradient(700px 400px at 50% 0%, rgba(163,213,32,.3), transparent 70%), #fbfaf3' }}>
+        <BrandLogo height={56} to={null} />
+        <img src="/icon-192.png" alt="" className="h-24 w-24 animate-floaty" />
+        <h1 className="font-display text-4xl text-leaf-900">אנחנו משדרגים את האתר</h1>
+        <p className="max-w-md text-lg text-ink-600">בולדיל יחזור בעוד זמן קצר עם עוד דילים חמים. תודה על הסבלנות!</p>
+        {me.user?.role === 'business' && (
+          <Link to="/dashboard" className="btn btn-leaf">
+            לממשק העסק
+          </Link>
+        )}
+      </div>
+    );
+  }
   const businessLink = me.user?.role === 'business' ? { to: '/dashboard', label: 'לממשק העסק' } : me.user?.role === 'admin' ? { to: '/admin', label: 'לממשק הניהול' } : { to: '/register', label: 'פרסום דיל לעסקים' };
 
   return (
@@ -282,6 +299,7 @@ export default function SiteLayout() {
             <div className="space-y-4">
               <BrandLogo height={52} />
               <p className="max-w-xs text-sm leading-relaxed text-ink-300">{site?.footerText}</p>
+              <InstallButton className="btn btn-lime btn-sm" />
             </div>
             <div>
               <h3 className="mb-3 font-bold text-white">ללקוחות</h3>

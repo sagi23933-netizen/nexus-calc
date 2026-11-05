@@ -200,13 +200,13 @@ function TrialBanner() {
   const progress = Math.min(1, Math.max(0, t.ms / total));
   return (
     <div
-      className={cx('relative mx-4 mt-4 overflow-hidden rounded-3xl px-5 py-4 text-white shadow-lift lg:mx-8', urgent && 'ring-2 ring-amber-300')}
+      className={cx('relative mx-4 mt-4 overflow-hidden rounded-3xl px-4 py-3.5 text-white shadow-lift sm:px-5 sm:py-4 lg:mx-8', urgent && 'ring-2 ring-amber-300')}
       style={{ background: urgent ? 'linear-gradient(120deg,#6e3013,#a8592a 60%,#c47643)' : 'linear-gradient(120deg,#123a1f,#1e5c2e 55%,#3f8f2a)' }}
     >
       <div className="pointer-events-none absolute -left-10 -top-16 h-44 w-44 rounded-full bg-white/10 blur-2xl" />
       <div className="relative flex flex-wrap items-center gap-4">
-        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 shadow-inner-top">{urgent ? <Timer size={24} /> : <Gift size={24} />}</div>
-        <div className="min-w-0 flex-1">
+        <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white/15 shadow-inner-top sm:flex">{urgent ? <Timer size={24} /> : <Gift size={24} />}</div>
+        <div className="min-w-[240px] flex-1">
           <div className="font-bold">
             {urgent ? 'תקופת הניסיון מסתיימת בקרוב!' : 'את/ה בתקופת ניסיון חינם'}{' '}
             <span className="tabular-nums text-lime-200">
@@ -214,7 +214,7 @@ function TrialBanner() {
               {t.h} שעות
             </span>
           </div>
-          <div className="mt-0.5 text-sm text-white/75">
+          <div className="mt-0.5 hidden text-sm text-white/75 sm:block">
             {b.package ? `בסיום הניסיון תמשיך חבילת ${b.package.name}. ` : ''}
             ללא תשלום עד סוף התקופה החשבון ייחסם אוטומטית. טוקן חינם אחד בכל יום.
           </div>
@@ -222,7 +222,7 @@ function TrialBanner() {
             <div className="h-full rounded-full bg-lime-300" style={{ width: `${progress * 100}%` }} />
           </div>
         </div>
-        <Link to="/dashboard/billing" className="btn btn-lime shrink-0">
+        <Link to="/dashboard/billing" className="btn btn-lime w-full shrink-0 sm:w-auto">
           <Rocket size={17} /> {b.package ? 'תשלום והפעלה' : 'בחירת חבילה'}
         </Link>
       </div>
@@ -244,7 +244,7 @@ function TokensPill() {
       </span>
       <span className="leading-tight">
         <span className="block text-[15px] font-black tabular-nums">{b.tokens.available}</span>
-        <span className="block text-[10px] font-medium text-ink-500">{b.tokens.daily ? `כולל ${b.tokens.daily} יומי` : 'טוקנים'}</span>
+        <span className="block whitespace-nowrap text-[10px] font-medium text-ink-500">{b.tokens.daily ? `כולל ${b.tokens.daily} יומי` : 'טוקנים'}</span>
       </span>
     </Link>
   );

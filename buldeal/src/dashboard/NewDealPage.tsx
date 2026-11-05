@@ -288,6 +288,9 @@ export default function NewDealPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-black tracking-tight text-ink-900 sm:text-[28px]">פרסום דיל חדש</h1>
         <p className="mt-0.5 text-sm text-ink-500">ממלאים 4 צעדים קצרים — וה-AI מעצב לכם כרטיס פרסום מושך לפי הקטגוריה של העסק.</p>
+        <a href="#deal-preview" className="btn btn-sm btn-outline mt-3 lg:hidden">
+          <Sparkles size={14} /> לתצוגה המקדימה
+        </a>
       </div>
 
       {/* stepper */}
@@ -581,7 +584,7 @@ export default function NewDealPage() {
         </div>
 
         {/* live preview */}
-        <div className="lg:sticky lg:top-24 lg:self-start">
+        <div id="deal-preview" className="scroll-mt-24 lg:sticky lg:top-24 lg:self-start">
           <div className="mb-3 flex items-center justify-between">
             <span className="text-sm font-bold text-ink-700">תצוגה מקדימה חיה</span>
             <span className="chip bg-white text-ink-500 ring-1 ring-ink-100">

@@ -173,56 +173,6 @@ export default function PackagesStudio() {
     window.addEventListener('pointerup', up);
   };
 
-  // ---------- keyboard: undo/redo, delete, nudge ----------
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement;
-      const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable;
-      const mod = e.ctrlKey || e.metaKey;
-      if (mod && (e.key === 'z' || e.key === 'Z') && !typing) {
-        e.preventDefault();
-        if (e.shiftKey) hist.redo();
-        else hist.undo();
-        return;
-      }
-      if (mod && (e.key === 'y' || e.key === 'Y') && !typing) {
-        e.preventDefault();
-        hist.redo();
-        return;
-      }
-      if (mod && (e.key === 's' || e.key === 'S')) {
-        e.preventDefault();
-        if (selected && isDirty(selected)) savePkg(selected);
-        return;
-      }
-      if (typing || !selected) return;
-      if ((e.key === 'Delete' || e.key === 'Backspace') && (stickerId || rowId)) {
-        e.preventDefault();
-        if (stickerId) {
-          update(selected.id, (p) => ({ ...p, stickers: p.stickers.filter((s) => s.id !== stickerId) }));
-          setStickerId(null);
-        } else if (rowId) {
-          update(selected.id, (p) => ({ ...p, rows: p.rows.filter((r) => r.id !== rowId) }));
-          setRowId(null);
-        }
-        return;
-      }
-      if (stickerId && e.key.startsWith('Arrow')) {
-        e.preventDefault();
-        const step = e.shiftKey ? 5 : 1;
-        const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
-        const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
-        update(selected.id, (p) => ({ ...p, stickers: p.stickers.map((s: PackageSticker) => (s.id === stickerId ? { ...s, x: clamp(s.x + dx), y: clamp(s.y + dy) } : s)) }), { coalesce: `nudge:${stickerId}` });
-      }
-      if (e.key === 'Escape') {
-        setRowId(null);
-        setStickerId(null);
-      }
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  });
-
   // ---------- package actions ----------
   const savePkg = async (p: Package) => {
     if (!p.name.trim()) return toast('יש להזין שם לחבילה', 'error');
@@ -347,6 +297,56 @@ export default function PackagesStudio() {
     setDragPkg(null);
     setOverPkg(null);
   };
+
+  // ---------- keyboard: undo/redo, delete, nudge ----------
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const t = e.target as HTMLElement;
+      const typing = ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName) || t.isContentEditable;
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && (e.key === 'z' || e.key === 'Z') && !typing) {
+        e.preventDefault();
+        if (e.shiftKey) hist.redo();
+        else hist.undo();
+        return;
+      }
+      if (mod && (e.key === 'y' || e.key === 'Y') && !typing) {
+        e.preventDefault();
+        hist.redo();
+        return;
+      }
+      if (mod && (e.key === 's' || e.key === 'S')) {
+        e.preventDefault();
+        if (selected && isDirty(selected)) savePkg(selected);
+        return;
+      }
+      if (typing || !selected) return;
+      if ((e.key === 'Delete' || e.key === 'Backspace') && (stickerId || rowId)) {
+        e.preventDefault();
+        if (stickerId) {
+          update(selected.id, (p) => ({ ...p, stickers: p.stickers.filter((s) => s.id !== stickerId) }));
+          setStickerId(null);
+        } else if (rowId) {
+          update(selected.id, (p) => ({ ...p, rows: p.rows.filter((r) => r.id !== rowId) }));
+          setRowId(null);
+        }
+        return;
+      }
+      if (stickerId && e.key.startsWith('Arrow')) {
+        e.preventDefault();
+        const step = e.shiftKey ? 5 : 1;
+        const dx = e.key === 'ArrowLeft' ? -step : e.key === 'ArrowRight' ? step : 0;
+        const dy = e.key === 'ArrowUp' ? -step : e.key === 'ArrowDown' ? step : 0;
+        update(selected.id, (p) => ({ ...p, stickers: p.stickers.map((s: PackageSticker) => (s.id === stickerId ? { ...s, x: clamp(s.x + dx), y: clamp(s.y + dy) } : s)) }), { coalesce: `nudge:${stickerId}` });
+      }
+      if (e.key === 'Escape') {
+        setRowId(null);
+        setStickerId(null);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   if (loading) return <PageLoader dark />;
 
@@ -556,7 +556,7 @@ export default function PackagesStudio() {
               </div>
             )}
           </div>
-          <div className={cx('pointer-events-none absolute bottom-3 left-4 text-[11px]', canvasBg === 'site' ? 'text-ink-400' : 'text-ink-500')}>
+          <div className={cx('pointer-events-none absolute bottom-3 left-4 hidden text-[11px] md:block', canvasBg === 'site' ? 'text-ink-400' : 'text-ink-500')}>
             Ctrl+Z ביטול · Ctrl+S שמירה · Delete מחיקת פריט נבחר · חיצים להזזת מדבקה
           </div>
         </div>

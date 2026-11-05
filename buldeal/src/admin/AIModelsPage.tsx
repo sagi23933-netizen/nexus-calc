@@ -256,12 +256,12 @@ export default function AIModelsPage() {
       />
 
       {/* status + usage */}
-      <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {!data ? (
           Array.from({ length: 4 }, (_, i) => <Skeleton key={i} className="h-[112px] !rounded-3xl" />)
         ) : (
           <>
-            <StatTile label="מודל פעיל" value={<span className="text-xl">{active?.name ?? '—'}</span>} icon={<Cpu size={20} />} tone="lime" hint={active?.provider === 'anthropic' ? active.model_id : 'ללא קריאה חיצונית'} />
+            <StatTile label="מודל פעיל" value={<span className="text-xl">{active ? (active.provider === 'anthropic' ? 'Claude' : 'מעצב מובנה') : '—'}</span>} icon={<Cpu size={20} />} tone="lime" hint={active?.provider === 'anthropic' ? <span dir="ltr">{active.model_id}</span> : 'ללא קריאה חיצונית'} />
             <StatTile label="קריאות AI (30 יום)" value={(usage?.calls ?? 0).toLocaleString('he-IL')} icon={<Zap size={20} />} tone="sky" hint={successRate != null ? `${successRate}% הצלחה` : 'אין קריאות עדיין'} />
             <StatTile label="זמן תגובה ממוצע" value={usage?.avg_latency ? `${(usage.avg_latency / 1000).toFixed(1)}s` : '—'} icon={<Clock size={20} />} tone="amber" hint="בקריאות מוצלחות" />
             <StatTile label="טוקנים (קלט / פלט)" value={<span className="text-xl" dir="ltr">{`${(usage?.input_tokens ?? 0).toLocaleString('he-IL')} / ${(usage?.output_tokens ?? 0).toLocaleString('he-IL')}`}</span>} icon={<Sparkles size={20} />} tone="violet" hint="30 יום אחרונים" />
@@ -360,7 +360,7 @@ export default function AIModelsPage() {
           )}
         </div>
 
-        {/* global AI settings */}
+        {/* AI settings that apply to every publish */}
         <Panel title="הגדרות עיצוב AI" subtitle="חלות על כל פרסום דיל">
           {settings ? (
             <div className="space-y-4">

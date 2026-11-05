@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#1e5c2e" />
+    <title>אין חיבור — בולדיל</title>
+    <style>
+      body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:Rubik,Arial,sans-serif;background:radial-gradient(700px 400px at 50% 0%,rgba(163,213,32,.3),transparent 70%),#fbfaf3;color:#141a13;text-align:center;padding:24px;box-sizing:border-box}
+      .card{max-width:420px;background:#fff;border-radius:28px;padding:36px 28px;box-shadow:0 30px 60px -24px rgba(8,32,15,.35)}
+      img{width:96px;height:96px;animation:f 4s ease-in-out infinite}
+      @keyframes f{50%{transform:translateY(-8px) rotate(2deg)}}
+      h1{margin:16px 0 8px;font-size:26px}
+      p{margin:0 0 22px;color:#5f6f5a;line-height:1.6}
+      button{font:inherit;font-weight:700;font-size:16px;border:0;border-radius:16px;padding:12px 26px;cursor:pointer;color:#08200f;background:linear-gradient(180deg,#b6e33c,#8cc10a 55%,#79a90a);box-shadow:inset 0 -3px 0 rgba(48,80,0,.35),0 10px 24px -10px rgba(110,160,0,.75)}
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img src="/icon-192.png" alt="" />
+      <h1>אין חיבור לאינטרנט</h1>
+      <p>נראה שהחיבור נפל. ברגע שתחזרו לרשת, הדילים החמים יחכו לכם כאן.</p>
+      <button onclick="location.reload()">לנסות שוב</button>
+    </div>
+  </body>
+</html>

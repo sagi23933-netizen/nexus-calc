@@ -18,7 +18,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLBut
         ref={ref}
         type={type}
         disabled={disabled || loading}
-        className={cx('btn', size === 'sm' && 'btn-sm', size === 'lg' && 'btn-lg', `btn-${variant}`, variant.startsWith('a-') && variant, className)}
+        className={cx('btn', size === 'sm' && 'btn-sm', size === 'lg' && 'btn-lg', variant.startsWith('a-') ? `a-btn-${variant.slice(2)}` : `btn-${variant}`, className)}
         {...rest}
       >
         {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : icon}

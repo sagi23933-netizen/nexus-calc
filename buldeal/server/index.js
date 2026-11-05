@@ -38,7 +38,9 @@ app.use(
         'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
         'font-src': ["'self'", 'https://fonts.gstatic.com', 'data:'],
         'img-src': ["'self'", 'data:', 'blob:'],
-        'connect-src': ["'self'"],
+        'connect-src': ["'self'", 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'],
+        'manifest-src': ["'self'"],
+        'worker-src': ["'self'"],
         'frame-ancestors': ["'none'"],
       },
     },
@@ -61,8 +63,19 @@ app.use('/uploads', express.static(UPLOAD_DIR, { maxAge: '7d', fallthrough: fals
 
 const dist = path.join(ROOT, 'dist');
 if (fs.existsSync(dist)) {
+  // the service worker and manifest must always be revalidated so app updates reach installed PWAs
+  for (const file of ['sw.js', 'manifest.json']) {
+    app.get(`/${file}`, (_req, res) => {
+      res.setHeader('Cache-Control', 'no-cache');
+      res.sendFile(path.join(dist, file));
+    });
+  }
+  app.use('/assets', express.static(path.join(dist, 'assets'), { maxAge: '1y', immutable: true }));
   app.use(express.static(dist, { maxAge: '1h', index: false }));
-  app.get('/{*splat}', (_req, res) => res.sendFile(path.join(dist, 'index.html')));
+  app.get('/{*splat}', (_req, res) => {
+    res.setHeader('Cache-Control', 'no-cache');
+    res.sendFile(path.join(dist, 'index.html'));
+  });
 }
 
 // eslint-disable-next-line no-unused-vars

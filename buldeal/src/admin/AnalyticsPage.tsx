@@ -183,7 +183,7 @@ export default function AnalyticsPage() {
       {error && <div className="mb-5 rounded-2xl bg-red-500/10 px-4 py-3 text-sm text-red-300 ring-1 ring-red-500/20">{error}</div>}
 
       {/* KPIs */}
-      <div className="mb-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {!data
           ? Array.from({ length: 8 }, (_, i) => <Skeleton key={i} className="h-[112px] !rounded-3xl" />)
           : [
