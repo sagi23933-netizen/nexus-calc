@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { CircleStop, ExternalLink, Eye, History, LayoutGrid, MapPin, MessageSquareHeart, Navigation, Phone, Plus, ThumbsDown, ThumbsUp, Wand2, Users } from 'lucide-react';
@@ -165,13 +165,17 @@ function HistoryList({ filter }: { filter?: 'pending' }) {
   const [ask, setAsk] = useState<HistoryItem | null>(null);
   const { data, loading, reload } = useApi<{ items: HistoryItem[]; total: number }>(`/business/history${qs({ page, size: 20, filter })}`);
   const pending = me.business?.counts.pending_feedback;
+  const prevPending = useRef(pending);
 
+  // feedback answered in the layout's modal → refresh the list
   useEffect(() => {
+    if (prevPending.current === pending) return;
+    prevPending.current = pending;
     reload();
   }, [pending, reload]);
 
   if (loading && !data) return <Skeleton className="h-64" />;
-  if (!data?.items.length)
+  if (!data?.items?.length)
     return (
       <div className="card-3d">
         <Empty icon={filter ? <MessageSquareHeart size={28} /> : <History size={28} />} title={filter ? 'אין דילים שממתינים למשוב' : 'עוד אין היסטוריה'} text={filter ? 'כל הכבוד — עניתם על הכל 🎉' : 'דילים שהסתיימו יופיעו כאן עם כל הנתונים.'} />
@@ -311,7 +315,7 @@ export default function DealsPage() {
               <Skeleton key={i} className="h-[560px] rounded-[28px]" />
             ))}
           </div>
-        ) : !data?.deals.length ? (
+        ) : !data?.deals?.length ? (
           <div className="card-3d">
             <Empty
               icon={<LayoutGrid size={28} />}

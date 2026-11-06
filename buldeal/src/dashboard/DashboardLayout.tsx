@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
+import { InstallButton } from '../shared/InstallPrompt';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   BarChart3, Bell, ChevronDown, Coins, CreditCard, ExternalLink, Gift, Home, KeyRound, LayoutGrid, LogOut, Plus, Rocket, Store, Timer, TriangleAlert,
@@ -163,6 +164,10 @@ function UserMenu({ onPassword }: { onPassword: () => void }) {
               {i.label}
             </button>
           ))}
+          <InstallButton
+            label="התקנת האפליקציה בטלפון"
+            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-leaf-700 hover:bg-lime-50 [&>svg]:text-lime-600"
+          />
           <button
             onClick={async () => {
               await logout();

@@ -29,9 +29,18 @@ async function request<T>(method: string, url: string, body?: Body, signal?: Abo
     throw new ApiError('אין חיבור לשרת. בדקו את החיבור לאינטרנט.', 0);
   }
   const isJson = res.headers.get('content-type')?.includes('application/json');
-  const data = isJson ? await res.json().catch(() => ({})) : null;
+  let data: unknown = null;
+  if (isJson) {
+    try {
+      data = await res.json();
+    } catch (err) {
+      // a request cancelled mid-download must surface as an abort, not as an empty payload
+      if (signal?.aborted || (err as Error).name === 'AbortError') throw err;
+      data = {};
+    }
+  }
   if (!res.ok) {
-    const msg = (data && (data as { error?: string }).error) || `שגיאה (${res.status})`;
+    const msg = (data as { error?: string } | null)?.error || `שגיאה (${res.status})`;
     throw new ApiError(msg, res.status, (data as { code?: string })?.code);
   }
   return data as T;

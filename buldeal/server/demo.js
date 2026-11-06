@@ -124,6 +124,9 @@ export async function seedDemo({ refreshDeals = true } = {}) {
       const cityIds = Object.values(cities).slice(0, 12);
       const catIds = Object.values(cats);
       const insert = `INSERT INTO analytics_events(type, path, visitor_id, session_id, category_id, city_id, referrer, device, browser, os, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+      const insertDeal = `INSERT INTO analytics_events(type, path, visitor_id, session_id, business_id, category_id, city_id, device, browser, os, created_at) VALUES (?,?,?,?,?,?,?,?,?,?,?)`;
+      const demoBiz = all(`SELECT b.id, b.category_id, b.city_id FROM businesses b JOIN users u ON u.id = b.user_id WHERE u.email LIKE 'demo%'`);
+      const pickBiz = () => demoBiz[Math.floor(rnd() * demoBiz.length)];
       let seed = 7;
       const rnd = () => {
         seed = (seed * 9301 + 49297) % 233280;
@@ -137,8 +140,14 @@ export async function seedDemo({ refreshDeals = true } = {}) {
           const di = Math.floor(rnd() * devices.length);
           run(insert, 'pageview', paths[Math.floor(rnd() * paths.length)], v, `${v}-${day}`, rnd() < 0.3 ? catIds[Math.floor(rnd() * catIds.length)] : null,
             rnd() < 0.5 ? cityIds[Math.floor(rnd() * cityIds.length)] : null, refs[Math.floor(rnd() * refs.length)], devices[di], browsers[Math.floor(rnd() * browsers.length)], oses[di % oses.length], at);
-          if (rnd() < 0.35) run(insert, 'deal_view', '/', v, `${v}-${day}`, null, null, '', devices[di], 'Chrome', oses[di % oses.length], at);
-          if (rnd() < 0.08) run(insert, rnd() < 0.5 ? 'deal_phone' : 'deal_waze', '/', v, `${v}-${day}`, null, null, '', devices[di], 'Chrome', oses[di % oses.length], at);
+          if (rnd() < 0.35 && demoBiz.length) {
+            const b = pickBiz();
+            run(insertDeal, 'deal_view', '/', v, `${v}-${day}`, b.id, b.category_id, b.city_id, devices[di], 'Chrome', oses[di % oses.length], at);
+          }
+          if (rnd() < 0.08 && demoBiz.length) {
+            const b = pickBiz();
+            run(insertDeal, rnd() < 0.5 ? 'deal_phone' : 'deal_waze', '/', v, `${v}-${day}`, b.id, b.category_id, b.city_id, devices[di], 'Chrome', oses[di % oses.length], at);
+          }
         }
         if (day % 3 === 0) run(insert, 'signup', '/register', `demo-s${day}`, `demo-s${day}`, null, null, '', 'mobile', 'Chrome', 'Android', addDays(now, -day));
       }

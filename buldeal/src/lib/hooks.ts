@@ -16,6 +16,7 @@ export function useApi<T>(url: string | null, deps: unknown[] = []) {
     api
       .get<T>(url, ctrl.signal)
       .then((d) => {
+        if (ctrl.signal.aborted) return;
         setData(d);
         setError(null);
       })

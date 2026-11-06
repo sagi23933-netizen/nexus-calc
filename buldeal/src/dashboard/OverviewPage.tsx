@@ -35,7 +35,7 @@ export default function OverviewPage() {
   const { me, setBusiness } = useAuth();
   const { data, loading, reload } = useApi<Overview>('/business/overview');
   const pending = me.business?.counts.pending_feedback;
-  const firstPending = useRef(true);
+  const prevPending = useRef(pending);
 
   useEffect(() => {
     if (data?.business) setBusiness(data.business);
@@ -43,10 +43,8 @@ export default function OverviewPage() {
 
   // feedback answered elsewhere (modal in the layout) → refresh the pending list
   useEffect(() => {
-    if (firstPending.current) {
-      firstPending.current = false;
-      return;
-    }
+    if (prevPending.current === pending) return;
+    prevPending.current = pending;
     reload();
   }, [pending, reload]);
 
@@ -212,7 +210,7 @@ export default function OverviewPage() {
               <Skeleton key={i} className="h-[470px] rounded-[28px]" />
             ))}
           </div>
-        ) : data?.live.length ? (
+        ) : data?.live?.length ? (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {data.live.slice(0, 3).map((d) => (
               <DealCard key={d.id} deal={d} showStats preview />
@@ -236,7 +234,7 @@ export default function OverviewPage() {
         <Panel title="מחכים למשוב שלך" icon={<MessageSquareHeart size={17} />} subtitle="האם הפרסום עזר והגיעו אנשים?">
           {!data ? (
             <Skeleton className="h-32" />
-          ) : data.pendingFeedback.length === 0 ? (
+          ) : !data.pendingFeedback?.length ? (
             <p className="py-6 text-center text-sm text-ink-500">אין דילים שממתינים למשוב 🎉</p>
           ) : (
             <ul className="space-y-2">
@@ -255,11 +253,11 @@ export default function OverviewPage() {
               ))}
             </ul>
           )}
-          {data && data.totals.customers > 0 && (
+          {data?.totals?.customers ? (
             <div className="mt-4 flex items-center gap-3 rounded-2xl bg-lime-50 p-3 text-sm text-lime-900 ring-1 ring-lime-200">
               <Users size={18} /> לפי המשובים שלך, הדילים הביאו בערך <b>{num(data.totals.customers)}</b> לקוחות 💪
             </div>
-          )}
+          ) : null}
         </Panel>
 
         <Panel
@@ -273,7 +271,7 @@ export default function OverviewPage() {
         >
           {!data ? (
             <Skeleton className="h-32" />
-          ) : data.notifications.length === 0 ? (
+          ) : !data.notifications?.length ? (
             <p className="py-6 text-center text-sm text-ink-500">אין עדכונים</p>
           ) : (
             <ul className="divide-y divide-ink-100">
