@@ -108,6 +108,7 @@ router.post('/change-password', async (req, res) => {
   const user = one('SELECT * FROM users WHERE id = ?', req.user.id);
   if (!(await checkPassword(req.body?.currentPassword, user.password_hash))) throw bad('הסיסמה הנוכחית שגויה');
   const pw = password(req.body?.newPassword);
+  if (pw === String(req.body?.currentPassword)) throw bad('הסיסמה החדשה חייבת להיות שונה מהנוכחית');
   const hash = await hashPassword(pw);
   run('UPDATE users SET password_hash = ?, must_change_password = 0, token_version = token_version + 1 WHERE id = ?', hash, user.id);
   setSession(res, { ...user, token_version: user.token_version + 1 });

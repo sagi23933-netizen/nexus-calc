@@ -3,6 +3,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { useAuth } from './lib/auth';
 import { PageLoader } from './shared/ui';
 import { PwaLayer } from './shared/InstallPrompt';
+import { ForcePasswordChange } from './shared/ForcePasswordChange';
 
 // ---- public site ----
 import SiteLayout from './site/SiteLayout';
@@ -75,6 +76,7 @@ function RequireRole({ role, children }: { role: 'admin' | 'business'; children:
   if (!me.user || me.user.role !== role) {
     return <Navigate to={role === 'admin' ? '/admin/login' : `/login?next=${encodeURIComponent(loc.pathname + loc.search)}`} replace />;
   }
+  if (me.user.mustChangePassword) return <ForcePasswordChange dark={role === 'admin'} />;
   if (role === 'business' && me.business?.needs_package && !loc.pathname.startsWith('/choose-package')) {
     return <Navigate to="/choose-package" replace />;
   }

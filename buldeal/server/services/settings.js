@@ -44,6 +44,8 @@ export const DEFAULT_SETTINGS = {
   },
   email: {
     enabled: false,
+    provider: 'resend',
+    apiKey: '',
     host: '',
     port: 587,
     secure: false,
@@ -62,7 +64,7 @@ export const DEFAULT_SETTINGS = {
   },
 };
 
-const SECRET_FIELDS = { email: ['pass'], billing: ['apiKey'] };
+const SECRET_FIELDS = { email: ['pass', 'apiKey'], billing: ['apiKey'] };
 
 let cache = null;
 

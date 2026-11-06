@@ -110,11 +110,18 @@ export const seedBase = tx(() => {
 
 export async function ensureAdmin() {
   if (one(`SELECT id FROM users WHERE role = 'admin' LIMIT 1`)) return false;
-  const hash = await hashPassword(config.adminPassword);
+  const email = config.adminEmail.trim().toLowerCase();
+  const pw = config.adminPassword;
+  if (!email || !pw) {
+    console.warn('[buldeal] לא נוצר מנהל על: יש להגדיר ADMIN_EMAIL ו-ADMIN_PASSWORD');
+    return false;
+  }
+  const hash = await hashPassword(pw);
+  // the initial password is temporary — the admin is asked to choose a new one on first login
   run(
     `INSERT INTO users(email, password_hash, role, name, must_change_password, created_at) VALUES (?,?,?,?,?,?)`,
-    config.adminEmail.toLowerCase(), hash, 'admin', 'מנהל העל', 0, nowIso(),
+    email, hash, 'admin', 'מנהל העל', 1, nowIso(),
   );
-  console.log(`\n[buldeal] נוצר מנהל על: ${config.adminEmail} / ${config.adminPassword === 'Admin123!' ? 'Admin123!  (מומלץ להחליף!)' : '(הסיסמה מ-ADMIN_PASSWORD)'}\n`);
+  console.log(`[buldeal] נוצר מנהל על: ${email} (תתבקש החלפת סיסמה בכניסה הראשונה)`);
   return true;
 }

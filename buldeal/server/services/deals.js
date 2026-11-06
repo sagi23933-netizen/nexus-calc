@@ -3,6 +3,7 @@ import path from 'node:path';
 import { all, one, run, tx } from '../db.js';
 import { nowIso, parseJson, wazeLink } from '../lib/utils.js';
 import { UPLOAD_DIR } from '../config.js';
+import { runtime } from '../lib/runtime.js';
 import { notifyBusiness } from './notify.js';
 
 const END_TEXT = {
@@ -14,6 +15,7 @@ const END_TEXT = {
 
 export function deleteUpload(publicUrl) {
   if (!publicUrl || !publicUrl.startsWith('/uploads/')) return;
+  if (runtime.removeUpload) return runtime.removeUpload(publicUrl);
   const file = path.join(UPLOAD_DIR, path.basename(publicUrl));
   fs.promises.unlink(file).catch(() => {});
 }

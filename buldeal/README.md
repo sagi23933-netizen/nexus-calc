@@ -32,7 +32,7 @@ npm start                 # השרת מגיש גם את ה-API וגם את הא�
 
 | תפקיד | אימייל | סיסמה |
 |---|---|---|
-| מנהל על | `admin@buldeal.co.il` (או `ADMIN_EMAIL`) | `Admin123!` (או `ADMIN_PASSWORD`) — **להחליף מיד** |
+| מנהל על (פיתוח מקומי) | `admin@buldeal.co.il` (או `ADMIN_EMAIL`) | `Admin123!` (או `ADMIN_PASSWORD`). בכניסה הראשונה המערכת מחייבת להחליף סיסמה. |
 | עסק פעיל (הדגמה) | `demo1@buldeal.co.il` | `Demo1234` |
 | עסק בתקופת ניסיון (הדגמה) | `demo5@buldeal.co.il` | `Demo1234` |
 
@@ -65,6 +65,48 @@ npm start                 # השרת מגיש גם את ה-API וגם את הא�
 
 לחיבור סליקה אמיתית (Tranzila, Cardcom, Meshulam, Pelecard וכו׳) מממשים ספק חדש ב-`server/services/billing.js` עם שתי מתודות: `tokenizeAndCharge` ו-`chargeToken`. אחר כך בוחרים אותו בהגדרות. בפרודקשן מומלץ להשתמש בשדות מאובטחים או בדף תשלום מתארח של הספק, כך שמספרי כרטיס לא יעברו בשרת.
 
+## פריסה ל-Cloudflare
+
+המערכת רצה ב-Cloudflare Workers בלי שרת משלכם:
+- **האתר** (React) מוגש מ-Workers Static Assets.
+- **ה-API ומסד הנתונים** רצים ב-Durable Object אחד עם SQLite מובנה. הקוד של הנתיבים והשירותים זהה לשרת ה-Node, דרך שכבת התאמה ב-`server/cf/`.
+- **תמונות שהעסקים מעלים** נשמרות באותו מסד נתונים.
+- **המשימות המתוזמנות** (מחיקת דילים, תזכורות וחסימת ניסיון, חידושי מנוי) רצות כל דקה באמצעות התראות (alarms) של ה-Durable Object.
+- **אימייל:** חיבור SMTP לא זמין ב-Cloudflare, ולכן באדמין › הגדרות › אימייל בוחרים בספק **Resend** ומזינים את מפתח ה-API שלו.
+
+### חיבור דרך GitHub (בלי מפתח API)
+
+1. נכנסים ל-<https://dash.cloudflare.com/?to=/:account/workers-and-pages/create>, בוחרים **Import a repository** ומחברים את GitHub.
+2. בוחרים את הריפו ומגדירים:
+   - **Root directory:** `buldeal`
+   - **Branch:** הענף לפריסה
+   - **Deploy command:** `npx wrangler deploy`
+
+   הבנייה של האתר רצה אוטומטית לפני כל פריסה (`build` ב-`wrangler.jsonc`).
+3. אחרי היצירה עוברים ל-**Settings › Variables and Secrets** ומוסיפים משתנים מסוג **Secret**:
+   - `ADMIN_EMAIL` — האימייל של מנהל העל
+   - `ADMIN_PASSWORD` — סיסמה ראשונית. בכניסה הראשונה המערכת מחייבת לבחור סיסמה חדשה.
+   - אופציונלי: `ANTHROPIC_API_KEY` לעיצוב ב-AI (אפשר להגדיר גם מממשק האדמין).
+4. מעכשיו כל `git push` לענף שנבחר נפרס אוטומטית. הכתובת תהיה `https://buldeal.<החשבון>.workers.dev`, ואפשר לחבר דומיין משלכם ב-**Settings › Domains & Routes**.
+
+> מנהל העל נוצר בבקשה הראשונה אחרי שהוגדרו `ADMIN_EMAIL` ו-`ADMIN_PASSWORD`. אין לשמור סיסמאות בקוד, כי הריפו ציבורי.
+
+### פריסה משורת הפקודה (עם API Token)
+
+```bash
+cd buldeal
+npx wrangler login              # או CLOUDFLARE_API_TOKEN עם תבנית "Edit Cloudflare Workers"
+npx wrangler secret put ADMIN_EMAIL
+npx wrangler secret put ADMIN_PASSWORD
+npm run cf:deploy               # בונה ומעלה
+```
+
+הרצה מקומית בסביבת Cloudflare: `npm run cf:dev`. הסודות לבדיקה נקראים מ-`.dev.vars` (דוגמה ב-`.dev.vars.example`).
+
+### תוכנית Cloudflare
+
+התוכנית החינמית תומכת ב-Durable Objects עם SQLite ומספיקה להתחלה. מגבלותיה: עד 100,000 בקשות ביום, 1GB אחסון, ו-10ms זמן מעבד לבקשה. בגלל המגבלה האחרונה, ה-hash של הסיסמאות ב-Cloudflare מוגדר ל-40,000 איטרציות. לאתר עם תנועה אמיתית מומלצת תוכנית **Workers Paid** (5$ לחודש): אחסון גדול יותר, בלי תקרה יומית, ואפשר להעלות את `PASSWORD_ITERATIONS` ל-100000.
+
 ## אפליקציה להתקנה (PWA)
 
 אפשר להתקין את בולדיל כאפליקציה בטלפון או במחשב, בלי חנות אפליקציות:
@@ -95,7 +137,7 @@ npm start                 # השרת מגיש גם את ה-API וגם את הא�
 
 ```
 buldeal/
-├── server/                 Express 5 + SQLite (better-sqlite3)
+├── server/                 Express 5 + SQLite (better-sqlite3); server/cf/ = Cloudflare Workers
 │   ├── index.js            הרכבת השרת, אבטחה (helmet/CSP), הגשת dist
 │   ├── db.js               סכמת המסד
 │   ├── seed.js / demo.js   נתוני בסיס ונתוני הדגמה

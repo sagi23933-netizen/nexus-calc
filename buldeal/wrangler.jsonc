@@ -1,0 +1,35 @@
+// BulDeal on Cloudflare Workers — see README.md › "פריסה ל-Cloudflare".
+// Secrets (Settings › Variables and Secrets): ADMIN_EMAIL, ADMIN_PASSWORD; optional ANTHROPIC_API_KEY, JWT_SECRET.
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "buldeal",
+  "main": "server/cf/worker.js",
+  "compatibility_date": "2025-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  // `wrangler deploy` (and Cloudflare's Git deploys) build the React app first
+  "build": { "command": "npm run build", "watch_dir": ["src", "public"] },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*", "/uploads/*"]
+  },
+  "durable_objects": {
+    "bindings": [{ "name": "APP", "class_name": "BulDealApp" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["BulDealApp"] }],
+  "alias": {
+    "better-sqlite3": "./server/cf/shims/better-sqlite3.js",
+    "express": "./server/cf/shims/express.js",
+    "express-rate-limit": "./server/cf/shims/rate-limit.js",
+    "multer": "./server/cf/shims/multer.js",
+    "nodemailer": "./server/cf/shims/nodemailer.js",
+    "exceljs": "./server/cf/shims/exceljs.js"
+  },
+  "vars": {
+    "NODE_ENV": "production",
+    "SEED_DEMO": "0"
+  },
+  "keep_vars": true,
+  "observability": { "enabled": true }
+}

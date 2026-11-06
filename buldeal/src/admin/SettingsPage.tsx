@@ -108,11 +108,22 @@ const SECTIONS: SectionDef[] = [
   },
   {
     id: 'email',
-    label: 'אימייל (SMTP)',
+    label: 'אימייל',
     icon: <Mail size={17} />,
     description: 'שליחת מיילים: ברוכים הבאים, סיום ניסיון, חיובים, איפוס סיסמה.',
     fields: [
       { key: 'enabled', label: 'שליחת מיילים פעילה', type: 'bool', full: true },
+      {
+        key: 'provider',
+        label: 'ספק שליחה',
+        type: 'select',
+        options: [
+          { value: 'resend', label: 'Resend (API) — מתאים לשרת Cloudflare' },
+          { value: 'smtp', label: 'SMTP — שרת דואר רגיל (לא זמין ב-Cloudflare)' },
+        ],
+        full: true,
+      },
+      { key: 'apiKey', label: 'מפתח API של Resend', type: 'password', ltr: true, full: true, hint: 'נדרש רק כשהספק הוא Resend (resend.com › API Keys)' },
       { key: 'host', label: 'שרת SMTP', type: 'text', ltr: true },
       { key: 'port', label: 'פורט', type: 'number', min: 1, max: 65535 },
       { key: 'secure', label: 'חיבור מאובטח (SSL/TLS)', type: 'bool', hint: 'בדרך כלל פורט 465' },

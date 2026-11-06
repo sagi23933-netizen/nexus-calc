@@ -9,7 +9,7 @@ let transportKey = '';
 
 function getTransport() {
   const s = getSection('email');
-  if (!s.enabled || !s.host) return null;
+  if (!s.enabled || s.provider === 'resend' || !s.host) return null;
   const key = JSON.stringify([s.host, s.port, s.secure, s.user, s.pass]);
   if (transport && key === transportKey) return transport;
   transport = nodemailer.createTransport({
@@ -40,11 +40,27 @@ function emailHtml(title, body, link) {
   </table></td></tr></table></body></html>`;
 }
 
+async function sendViaResend(s, to, subject, text, html) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${s.apiKey}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ from: s.from, to: [to], subject, text, html }),
+  });
+  if (!res.ok) throw new Error(`Resend ${res.status}: ${(await res.text()).slice(0, 200)}`);
+}
+
 export async function sendEmail(to, subject, body, link) {
-  const t = getTransport();
-  if (!t || !to) return false;
+  const s = getSection('email');
+  if (!s.enabled || !to) return false;
   try {
-    await t.sendMail({ from: getSection('email').from, to, subject, text: body, html: emailHtml(subject, body, link) });
+    if (s.provider === 'resend') {
+      if (!s.apiKey) return false;
+      await sendViaResend(s, to, subject, body, emailHtml(subject, body, link));
+      return true;
+    }
+    const t = getTransport();
+    if (!t) return false;
+    await t.sendMail({ from: s.from, to, subject, text: body, html: emailHtml(subject, body, link) });
     return true;
   } catch (err) {
     console.warn('[mail] failed:', err.message);
@@ -53,8 +69,14 @@ export async function sendEmail(to, subject, body, link) {
 }
 
 export async function verifyEmailTransport() {
+  const s = getSection('email');
+  if (!s.enabled) throw new Error('שליחת מיילים כבויה');
+  if (s.provider === 'resend') {
+    if (!s.apiKey) throw new Error('חסר מפתח API של Resend');
+    return true;
+  }
   const t = getTransport();
-  if (!t) throw new Error('שליחת מיילים כבויה או שחסר שרת SMTP');
+  if (!t) throw new Error('חסר שרת SMTP');
   await t.verify();
   return true;
 }

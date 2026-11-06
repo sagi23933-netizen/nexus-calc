@@ -1,0 +1,5 @@
+# Secrets for Cloudflare (set them in the dashboard: Workers › buldeal › Settings › Variables and Secrets)
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+# optional
+ANTHROPIC_API_KEY=
